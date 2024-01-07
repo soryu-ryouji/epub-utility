@@ -5,25 +5,27 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 def process_html_file(file_path, output_folder):
-    print(f"current file path: {file_path}")
+    content = ""
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
     soup = BeautifulSoup(content, 'html.parser')
     img_tags = soup.find_all('img')
+    file_name = os.path.splitext(os.path.basename(file_path))[0]
 
     for index, img_tag in enumerate(img_tags, start=1):
         img_src = img_tag.get('src')
         img_name = os.path.basename(img_src)
         img_extension = os.path.splitext(img_name)[1]
 
-        new_img_name = f"{str(index).zfill(5)}{img_extension}"
+        new_img_name = f"{file_name}{img_extension}"
 
         img_src_abs = urljoin(file_path, img_src)
-        print(f"img src: {img_src}\nabs img src: {img_src_abs}")
+        print(f"""file: {file_path}\t\timg src: {img_src}\t\tabs img src: {img_src_abs}""")
 
         new_img_path = os.path.join(output_folder, new_img_name)
         shutil.copy(img_src_abs, new_img_path)
+
 
 def export_html_image(html_path, output_path):
     os.makedirs(output_path, exist_ok=True)
